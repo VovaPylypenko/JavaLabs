@@ -1,43 +1,55 @@
 package kpi.lab1;
 
 import java.text.DecimalFormat;
+import java.text.Format;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Matrix {
-    private float A[][];
-    private int N;
 
-    Matrix(int n) {
-        N = n;
-        A = fillMatrix();
+    private float A[][];
+
+    Matrix() {
     }
 
-    private float[][] fillMatrix(){
+    Matrix(int n) {
+        A = fillMatrix(n);
+    }
+
+    private float[][] fillMatrix(int size) {
         Random random = new Random();
-        float[][] a = new float[N][N];
-        for (int i = 0; i < N; i++)
-            for (int j = 0; j < N; j++)
-                a[i][j] = random.nextFloat() * 100;
+        float[][] a = new float[size][size];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                a[i][j] = random.nextFloat() * 100 - 50;
         return a;
     }
 
-    void turnСounterclockwise(){
-        float [][] newA = new float[N][N];
+    void overfillMatrix(int size) {
+        A = fillMatrix(size);
+    }
 
-        for (int i = 0; i < N; i++)
-            for (int j = 0;  j < N; j++) {
-                newA[N - 1 - j][i] = A[i][j];
+    Matrix turnСounterclockwise() {
+        int size = A[0].length;
+        for (int i = 0; i < size / 2; i++)
+            for (int j = i; j < size-i-1; j++) {
+                float temp = A[i][j];
+                A[i][j] = A[j][size-1-i];
+                A[j][size-1-i] = A[size-1-i][size-1-j];
+                A[size-1-i][size-1-j] = A[size-1-j][i];
+                A[size-1-j][i] = temp;
             }
-        A = newA;
+        return this;
     }
 
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         DecimalFormat decimalFormat = new DecimalFormat("##.##");
+
         for (float i[] : A) {
             for (float ii : i)
-                stringBuilder.append(decimalFormat.format(ii)).append(" ");
+                stringBuilder.append(String.format("%6s", decimalFormat.format(ii))).append(" ");
             stringBuilder.append('\n');
         }
         return stringBuilder.toString();
