@@ -12,28 +12,18 @@ public class Train {
     private int seatsPlacard;
     private int seatsCB;
 
-    public Train() {
-    }
+    private Logger2 logger;
 
     public Train(Place destination, int number, LocalTime date, int seatsCommon,
-                 int seatsCoupe, int seatsPlacard, int seatsCB) throws Exception {
+                 int seatsCoupe, int seatsPlacard, int seatsCB, Logger2 logger) throws Exception2 {
+        this.logger = logger;
         this.destination = destination;
-        if (number > 0)
-            this.number = number;
-        else throw new Exception("not correct enter the number of train. Can`t be < 1");
+        setNumber(number);
         this.date = date;
-        if (seatsCommon >= 0)
-            this.seatsCommon = seatsCommon;
-        else throw new Exception("not correct enter the common seats. Can`t be < 0");
-        if (seatsCoupe >= 0)
-            this.seatsCoupe = seatsCoupe;
-        else throw new Exception("not correct enter the coupe seats. Can`t be < 0");
-        if (seatsPlacard >= 0)
-            this.seatsPlacard = seatsPlacard;
-        else throw new Exception("not correct enter the placard seats. Can`t be < 0");
-        if (seatsCB >= 0)
-            this.seatsCB = seatsCB;
-        else throw new Exception("not correct enter the CB seats. Can`t be < 0");
+        setSeatsCommon(seatsCommon);
+        setSeatsCoupe(seatsCoupe);
+        setSeatsPlacard(seatsPlacard);
+        setSeatsCB(seatsCB);
     }
 
     public Place getDestination() {
@@ -48,8 +38,10 @@ public class Train {
         return number;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setNumber(int number) throws Exception2 {
+        if (number > 0)
+            this.number = number;
+        else throw new Exception2("not correct enter the number of train. Can`t be < 1", logger);
     }
 
     public LocalTime getDate() {
@@ -64,32 +56,40 @@ public class Train {
         return seatsCommon;
     }
 
-    public void setSeatsCommon(int seatsCommon) {
-        this.seatsCommon = seatsCommon;
+    public void setSeatsCommon(int seatsCommon) throws Exception2 {
+        if (seatsCommon >= 0)
+            this.seatsCommon = seatsCommon;
+        else throw new Exception2("not correct enter the common seats. Can`t be < 0", logger);
     }
 
     public int getSeatsCoupe() {
         return seatsCoupe;
     }
 
-    public void setSeatsCoupe(int seatsCoupe) {
-        this.seatsCoupe = seatsCoupe;
+    public void setSeatsCoupe(int seatsCoupe) throws Exception2 {
+        if (seatsCoupe >= 0)
+            this.seatsCoupe = seatsCoupe;
+        else throw new Exception2("not correct enter the coupe seats. Can`t be < 0", logger);
     }
 
     public int getSeatsPlacard() {
         return seatsPlacard;
     }
 
-    public void setSeatsPlacard(int seatsPlacard) {
-        this.seatsPlacard = seatsPlacard;
+    public void setSeatsPlacard(int seatsPlacard) throws Exception2 {
+        if (seatsPlacard >= 0)
+            this.seatsPlacard = seatsPlacard;
+        else throw new Exception2("not correct enter the placard seats. Can`t be < 0", logger);
     }
 
     public int getSeatsCB() {
         return seatsCB;
     }
 
-    public void setSeatsCB(int seatsCB) {
-        this.seatsCB = seatsCB;
+    public void setSeatsCB(int seatsCB) throws Exception2 {
+        if (seatsCB >= 0)
+            this.seatsCB = seatsCB;
+        else throw new Exception2("not correct enter the CB seats. Can`t be < 0", logger);
     }
 
     @Override

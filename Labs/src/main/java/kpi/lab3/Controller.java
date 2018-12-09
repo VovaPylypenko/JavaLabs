@@ -1,93 +1,74 @@
 package kpi.lab3;
 
 import java.time.LocalTime;
-import java.util.Scanner;
-import java.util.Vector;
 
 class Controller {
-    private Scanner scanner;
-    private Vector<Train> trains;
+
+    private TrainsModel trains;
     private View view;
+    private ScannerInfo scanner;
+    private Archiver archiver;
+    private Logger2 logger;
 
-    Controller(Vector<Train> trains, View view) {
-        this.trains = trains;
-        this.view = view;
+    Controller(Logger2 logger) {
+        this.trains = new TrainsModel(logger);
+        this.view = new View(logger);
+        this.scanner = new ScannerInfo(logger);
+        this.logger = logger;
+        this.archiver = new Archiver(logger);
     }
 
-    void run(){
-        scanner = new Scanner(System.in);
-        try {
-            view.print(trains);
-
-            while (menu());
-
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+    void run() throws Exception2 {
+        view.printMenu();
+        while (menu());
     }
 
-    private boolean menu(){
-        System.out.println("===Menu===");
-        System.out.println(
-                "1 - print all trains.\n" +
-                "2 - print trains with Seats Common.\n" +
-                "3 - print trains in Place After\n" +
-                "also exit!");
-        int s = scanner.nextInt();
-        if (s == 1){
-            view.print(trains, "All trains!");
-            return true;
-        }else if (s == 2){
-            view.print(trainsWithSeatsCommon(trains), "trains with Seats Common");
-            return true;
-        }else if (s == 3){
-            Place place = scannePlace();
-            LocalTime time = scanneTime();
-            view.print(trainsInPlaceAfter(trains,place,time),
-                    "trains in " + place + " after " + time.getHour() + ':' + time.getMinute());
-            return true;
-        }else {
-            System.out.println("***** End *****");
-            return false;
-        }
-    }
+    private boolean menu() throws Exception2 {
 
-    private Vector<Train> trainsWithSeatsCommon(Vector<Train> trains){
-        Vector<Train> trainsRes = (Vector<Train>) trains.clone();
-        trainsRes.clear();
-        for (Train train : trains)
-            if (train.getSeatsCommon() > 0)
-                trainsRes.add(train);
-        return trainsRes;
-    }
-
-    private Vector<Train> trainsInPlaceAfter(Vector<Train> trains, Place place, LocalTime time){
-        Vector<Train> trainsRes = (Vector<Train>) trains.clone();
-        trainsRes.clear();
-        for (Train train : trains)
-            if (train.getDestination().equals(place) && train.getDate().isAfter(time))
-                trainsRes.add(train);
-        return trainsRes;
-    }
-
-    private Place scannePlace(){
-        System.out.println("Enter place:");
-        Place place = null;
-        while (place == null) {
-            try {
-                place = Place.valueOf(scanner.next());
-            } catch (IllegalArgumentException iae) {
-                System.out.println("Not correct Place");
+        switch (scanner.scanneMenu()) {
+            case 0: {
+                view.printMenu();
+                return true;
+            }
+            case 1: {
+                logger.getLogger().info("Ask print all trains");
+                view.printTrain(trains.getTrains(), "All trains!");
+                return true;
+            }
+            case 2: {
+                logger.getLogger().info("Ask print all trains with Seats Common");
+                view.printTrain(trains.trainsWithSeatsCommon(), "trains with Seats Common");
+                return true;
+            }
+            case 3: {
+                logger.getLogger().info("Ask print trains in same place and after same time");
+                Place place = scanner.scannePlace();
+                LocalTime time = scanner.scanneTime();
+                view.printTrain(trains.trainsInPlaceAfter(place,time),
+                        "trains in " + place + " after " + time.getHour() + ':' + time.getMinute());
+                return true;
+            }
+            case 4: {
+                logger.getLogger().info("Ask archive trains to json file");
+                archiver.archived(trains.getTrainsDB());
+                return true;
+            }
+            case 5: {
+                logger.getLogger().info("Ask read trains from json file");
+                trains.setTrains(archiver.readArchive());
+                return true;
+            }
+            case 6: {
+                logger.getLogger().info("Ask end program");
+                view.printEnd();
+                return false;
+            }
+            default: {
+                logger.getLogger().warn("Not correct input menu");
+                throw new Exception2("Not correct input menu.", logger);
             }
         }
-        return place;
     }
 
-    private LocalTime scanneTime(){
-        System.out.println("Enter hour:");
-        int hour = scanner.nextInt();
-        System.out.println("Enter minute:");
-        int minute = scanner.nextInt();
-        return LocalTime.of(hour,minute);
-    }
+
 }
